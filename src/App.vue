@@ -2,12 +2,14 @@
   <div id="app">
     <Header />
     <div id="nav">
-      <router-link to="/">主页</router-link> |
       <router-link to="/netease">网易云音乐</router-link> |
       <router-link to="/qq">qq音乐</router-link> |
-      <router-link to="/kugou">酷狗音乐</router-link>
+      <router-link to="/kugou">酷狗音乐</router-link> |
+      <router-link to="/song">酷狗音乐</router-link>
     </div>
-    <router-view/>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
     <Player/>
   </div>
 </template>
@@ -31,5 +33,8 @@ export default {
 }
 li {
   list-style: none;
+}
+body {
+  padding-bottom: 80px;
 }
 </style>

@@ -5,31 +5,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     playList: [
-      {
-        name: "aaa",
-        id: "1476206740",
-        artists: "bbb",
-        imgSrc:"",
-        lyric:"",
-        isPlaying:true
-      },
-      {
-        name: "ccc",
-        id: "11",
-        artists: "ddd",
-        imgSrc:"",
-        lyric:"",
-        isPlaying:false
-      },
-      {
-        name: "ccc",
-        id: "22",
-        artists: "ddd",
-        imgSrc:"",
-        lyric:"",
-        isPlaying:false
-      }
-    ]
+
+    ],
+    musicDom:{}
   },
   getters: {
     playingSong(state) {
@@ -38,15 +16,15 @@ export default new Vuex.Store({
         return {
           name: "",
           id: "",
-          artists: "",
+          picUrl: "",
           imgSrc:"",
           lyric:"",
           isPlaying:false
         }
       }else {
         return {
-          ...state.playList[index],
-          index
+          index:index,
+          ...state.playList[index]
         }
       }
     }
@@ -56,18 +34,28 @@ export default new Vuex.Store({
     /**
      * @function 设置当前播放歌曲
      * @param {Object: {name:String, id:String, artists:String, [imgSrc:String]} } val 关于歌曲的信息
+     * @param {Number} val 关于歌曲在playList的索引值
      */
     setPlayingSong(state, val) {
-      if(val.name && val.id && val.artists) {
-        if(this.getters.playingSong.index) {
+      if(/\d/.test(val)) {
+        if(this.getters.playingSong.id) {
           state.playList[this.getters.playingSong.index].isPlaying = false
         }
-        let findSongIndex = state.playList.find(item => item.id === val.id)
-        if(findSongIndex) {
-          state.playingSong[findSongIndex].imgSrc = val.imgSrc
-          state.playingSong[findSongIndex].isPlaying = true
-        }else {
-          this.addPlayListItem(val, true)
+        state.playList[val].isPlaying = true
+      }else {
+        if(val.name && val.id && val.artists) {
+          if(this.getters.playingSong.index) {
+            state.playList[this.getters.playingSong.index].isPlaying = false
+          }
+          let findSongIndex = state.playList.findIndex(item => item.id === val.id) 
+          if(findSongIndex !== -1) {
+            if(this.getters.playingSong.id) {
+              state.playList[this.getters.playingSong.index].isPlaying = false
+            }
+            state.playList[findSongIndex].isPlaying = true
+          }else {
+            this.commit("addPlayListItem",{...val, isPlaying:true})
+          }
         }
       }
     },
@@ -82,14 +70,14 @@ export default new Vuex.Store({
     },
     /**
      * @function 向播放列表添加歌曲
-     * @param {Object: {name:String, id:String, artists:String, [imgSrc:String]} } val 歌曲的相关信息
-     * @param {Boolean} isPlaying 是否播放
+     * @param {Object: {name:String, id:String, artists:String, [imgSrc:String, isPlaying: Boolean]} } val 歌曲的相关信息
      */
-    addPlayListItem(state, val, isPlaying) {
+    addPlayListItem(state, val) {
       if(val.name && val.id && val.artists) {
         if(!state.playList.find(item => item.id === val.id)) {
-          if(isPlaying) {
-            if(this.getters.playingSong) {
+          if(val.isPlaying) {
+            if(this.getters.playingSong.id) {
+              console.log()
               state.playList[this.getters.playingSong.index].isPlaying = false
             }
             val.isPlaying = true
@@ -101,7 +89,7 @@ export default new Vuex.Store({
       }
     },
     /**
-     * @function 
+     * @function 移除PlayList的歌曲
      * @param {Object: {type:"index" || "id",val:Number}} data 歌曲相关信息,可选歌曲在playList的索引值或歌曲id
      */
     removePlayListItem(state, data) {
@@ -113,6 +101,49 @@ export default new Vuex.Store({
         if(findIndex !== -1) {
           state.playList.splice(findIndex,1)
         }
+      }
+    },
+    /**
+     * @function 播放下一首歌
+     */
+    playNextSong(state) {
+      if(this.getters.playingSong.id) {
+        if(state.playList.length > 1){
+          let playingIndex = this.getters.playingSong.index
+          if(playingIndex < state.playList.length - 1) {
+            state.playList[playingIndex].isPlaying = false
+            state.playList[playingIndex + 1].isPlaying = true
+          }else {
+            state.playList[playingIndex].isPlaying = false
+            state.playList[0].isPlaying = true
+          }
+        }
+      }
+    },
+    /**
+     * @function 播放上一首歌
+     */
+    playPreviousSong(state) {
+      if(this.getters.playingSong.id) {
+        if(state.playList.length > 1){
+          let playingIndex = this.getters.playingSong.index
+          console.log(playingIndex)
+          if(playingIndex !== 0) {
+            state.playList[playingIndex].isPlaying = false
+            state.playList[playingIndex - 1].isPlaying = true
+          }else {
+            state.playList[playingIndex].isPlaying = false
+            state.playList[state.playList.length - 1].isPlaying = true
+          }
+        }
+      }
+    },
+    /**
+     * @function 提交audio的dom对象
+     */
+    setMusicDom(state, dom) {
+      if(dom) {
+        state.musicDom = dom
       }
     }
   },

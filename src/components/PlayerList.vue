@@ -6,11 +6,11 @@
       </div>
       <div class="playerListSongOutter">
           <transition-group name="playList" tag="ul" class="playerListSong" v-if="playList">
-            <li class="playerListSongItem" v-for="(item, index) in playList" :key="item.id">
+            <li class="playerListSongItem" v-for="(item, index) in playList" :key="item.id" @dblclick="playingSong(index)">
                 <div class="playeringMark iconfont" v-if="item.isPlaying">&#xe60f;</div>
                 <div class="noPlayeringMark iconfont" v-else>&#xe60f;</div>
-                <div class="playerListSongName">{{item.name}}</div>
-                <div class="playerListSongaArtists">{{item.artists}}</div>
+                <div class="playerListSongName" :title="item.name">{{sliceContent(item.name,"name")}}</div>
+                <div class="playerListSongaArtists" :title="item.artists" >{{sliceContent(item.artists,"artists")}}</div>
                 <div class="playerListSongDelete iconfont" @click="removePlayListItem({type:'index',val: index})">&#xe601;</div>
             </li>
           </transition-group>
@@ -35,6 +35,22 @@ export default {
       })
   },
   methods:{
+      sliceContent(content, type) {
+          if(type === "artists"){
+            if(content.length > 9) {
+              return content.slice(0,9) + "..."
+            }
+            return content
+          }else if(type === "name") {
+            if(content.length > 14) {
+              return content.slice(0,14) + "..."
+            }
+            return content
+          }
+      },
+      playingSong(index) {
+          this.$store.commit("setPlayingSong",index)
+      },
       ...mapMutations(["removePlayListItem"])
   }
 }

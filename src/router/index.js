@@ -1,14 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import store from '@/store'
 Vue.use(VueRouter)
 
   const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
   {
     path: '/netease',
     name: 'Netease',
@@ -16,6 +11,18 @@ Vue.use(VueRouter)
       return {type: "netease"}
     },
     component: () => import('../views/NewSong')
+  },
+  {
+    path: '/song',
+    name: 'Song',
+    component: () => import('../views/SongPage'),
+    beforeEnter:(to, from, next) => {
+      if(store.getters.playingSong.id) {
+        next()
+      }else {
+        next(false)
+      }
+    }
   }
 ]
 

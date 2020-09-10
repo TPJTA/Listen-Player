@@ -2,13 +2,13 @@
   <div class="player">
       <audio preload  :src="songData.src" ref="music"></audio>
       <div class="playerButton">
-        <button class="iconfont">&#xe62b;</button>
+        <button class="iconfont" @click="previousSong">&#xe62b;</button>
         <button class="iconfont" v-if="!isPlay" @click="playingMusic">&#xe60f;</button>
         <button class="iconfont" v-else @click="playingMusic">&#xe613;</button>
-        <button class="iconfont">&#xe62b;</button>
+        <button class="iconfont" @click="nextSong">&#xe62b;</button>
       </div>
       <div class="playerData">
-        <img :src="playingSong.imgSrc || require('@/assets/logo.png')" alt="" class="playerImg">
+        <img :src="playingSong.picUrl || require('@/assets/logo.png')" alt="" class="playerImg" @click="goSongPage">
         <div class="playerDetail">
           <div class="playerWords">
             <div class="songData">
@@ -117,6 +117,7 @@ export default {
   watch: {
     playingSong:function(val, oldVal) {
       if(val.id !== oldVal.id) {
+        this.isPlay = false
         this.songData.src = ""
         this.songData.duration = 0
         this.playerBufferedPosition = 0
@@ -125,7 +126,9 @@ export default {
         if(this.playingSong.id) {
           getSongData(this.playingSong.id).then(suc => {
               this.songData.src = suc.playSong.url
-              this.$store.commit("setPlayinglyric",suc.lyric.lrc.lyric)
+              if(!this.playingSong.lyric) {
+                this.$store.commit("setPlayinglyric",suc.lyric.lrc.lyric)
+              }
           })
         }else {
           this.isBuffering = false
@@ -134,25 +137,30 @@ export default {
     }
   },
   mounted() {
-      if(this.playingSong.id) {
-        getSongData(this.playingSong.id).then(suc => {
-            this.songData.src = suc.playSong.url
+    this.$store.commit("setMusicDom", this.$refs.music)
+    if(this.playingSong.id) {
+      getSongData(this.playingSong.id).then(suc => {
+          this.songData.src = suc.playSong.url
+          if(!this.playingSong.lyric) {
             this.$store.commit("setPlayinglyric",suc.lyric.lrc.lyric)
-        })
-      }else {
-        this.isBuffering = false
-      }
-      this.$refs.music.addEventListener("play",() => {this.isPlay = true})
-      this.$refs.music.addEventListener("pause",() => {this.isPlay = false})
-      this.$refs.music.addEventListener("canplay",() => {
-        this.isBuffering = false
-        this.songData.duration = this.$refs.music.duration
+          }
       })
-      this.$refs.music.addEventListener("waiting",() => {
-        this.isBuffering = true
-      })
-      this.$refs.music.addEventListener("progress",this.getbuff)
-      this.$refs.music.addEventListener("timeupdate",this.getePlayingPosition)
+    }else {
+      this.isBuffering = false
+    }
+    this.$refs.music.addEventListener("play",() => {this.isPlay = true})
+    this.$refs.music.addEventListener("pause",() => {this.isPlay = false})
+    this.$refs.music.addEventListener("canplay",() => {
+      this.isPlay = true
+      this.$refs.music.play()
+      this.isBuffering = false
+      this.songData.duration = this.$refs.music.duration
+    })
+    this.$refs.music.addEventListener("waiting",() => {
+      this.isBuffering = true
+    })
+    this.$refs.music.addEventListener("progress",this.getbuff)
+    this.$refs.music.addEventListener("timeupdate",this.getePlayingPosition)
   },
   methods:{
     playingMusic() {
@@ -221,6 +229,17 @@ export default {
         this.playingPosition = this.$refs.music.currentTime / this.$refs.music.duration * 100
         timerId = setTimeout(() => {playProgressFlag = true},200)
       }
+    },
+    nextSong() {
+      this.$store.commit("playNextSong")
+    },
+    previousSong() {
+      this.$store.commit("playPreviousSong")
+    },
+    goSongPage() {
+      if(this.playingSong.id){
+        this.$router.push('/song')
+      }
     }
   }
 }
@@ -264,6 +283,10 @@ export default {
   > .playerImg {
     width: 35px;
     height: 35px;
+    box-sizing: border-box;
+    border: 1px solid #aaa;
+    box-shadow: 0 0 5px 0 #888;
+    cursor: pointer;
   }
 }
 .playerDetail {
@@ -354,6 +377,9 @@ export default {
   border: .5px solid #000;
   border-radius: 50%;
   cursor: pointer;
+  &:hover {
+    box-shadow: 0 0 5px 0 #888;
+  }
   &::after:extend(.progressButton) {
     content: "";
     width: 4px;
