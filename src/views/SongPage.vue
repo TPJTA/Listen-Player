@@ -94,7 +94,8 @@ export default {
 
 <style scoped lang="less">
 .song-enter-active, .song-leave-active {
-transition: all .4s;
+  transition: all .4s;
+  position: absolute;
 }
 .song-enter, .song-leave-active {
   opacity: 0;
@@ -151,7 +152,7 @@ transition: all .4s;
   .song-lyric {
     >div {
       margin: 15px 0;
-      height: 20px;
+      min-height: 20px;
       font-size: 15px;
       text-align: center;
     }

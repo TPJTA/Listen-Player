@@ -4,38 +4,26 @@
  */
 import axios from "axios"
 import qs from "qs"
-import aesjs from "aes-js"
-// import cheerio from "cheerio"
+import CryptoJS from "crypto-js"
 
 export {
   getNewSong,
-  getSongData
+  getSongData,
+  keyWords,
+  getSearchResult
 }
 
 function _aes_encrypt(text, sec_key) { //下面函数依赖的函数
-    const pad = 16 - (text.length % 16);
-    for (let i = 0; i < pad; i += 1) {
-      text += String.fromCharCode(pad); // eslint-disable-line no-param-reassign
-    }
-    const key = aesjs.utils.utf8.toBytes(sec_key);
-    // The initialization vector, which must be 16 bytes
-    const iv = aesjs.utils.utf8.toBytes('0102030405060708');
-    let textBytes = aesjs.utils.utf8.toBytes(text);
-    const aesCbc = new aesjs.ModeOfOperation.cbc(key, iv); // eslint-disable-line new-cap
-    const cipherArray = [];
-    while (textBytes.length !== 0) {
-      const block = aesCbc.encrypt(textBytes.slice(0, 16));
-      Array.prototype.push.apply(cipherArray, block);
-      textBytes = textBytes.slice(16);
-    }
-    let ciphertext = '';
-    for (let i = 0; i < cipherArray.length; i += 1) {
-      ciphertext += String.fromCharCode(cipherArray[i]);
-    }
-    ciphertext = btoa(ciphertext);
-    return ciphertext;
+  let key = CryptoJS.enc.Utf8.parse(sec_key);
+  // The initialization vector, which must be 16 bytes
+  let iv = CryptoJS.enc.Utf8.parse('0102030405060708');
+  let decrypt = CryptoJS.AES.encrypt(text, key, {
+    iv : iv,
+    mode : CryptoJS.mode.CBC,
+    padding : CryptoJS.pad.Pkcs7
+  })
+  return decrypt.toString();
 }
-
 function getRequest(data) { //请求加密的方法
     const encText = '0CoJUm6Qyw8W8jud';
     data = JSON.stringify(data)
@@ -62,3 +50,14 @@ async function getSongData(id) {
   let [lyric, playSong] = await Promise.all([getlyric(id), getPlaySong(id)])
   return {lyric:lyric.data, playSong:playSong.data.data[0]}
 }
+
+const keyWords = (keywords) => axios.post("/netServe/weapi/search/suggest/keyword", qs.stringify(getRequest({s: keywords})))
+
+const getSearchResult = (keywords, page = 1) => axios.post("/netServe/weapi/search/get", qs.stringify(getRequest({
+  s: keywords,
+  limit: 20,
+  offset: 20*(page-1),
+  type: 1,
+  strategy: 5,
+  queryCorrect: true
+})))

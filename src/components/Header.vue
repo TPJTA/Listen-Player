@@ -1,24 +1,40 @@
 <template>
   <div class="header">
-      <input type="text" class="search-box">
+    <img :src="require('@/assets/logo.png')" alt="" class="logo">
+    <i class="iconfont header-button">&#xe622;</i>
+    <i class="iconfont header-button">&#xe622;</i>
+    <HeaderSearch/>
   </div>
 </template>
 
 <script>
+import HeaderSearch from "./HeaderSearch"
 export default {
-  name: "Header"
+  name: "Header",
+  components:{
+    HeaderSearch
+  }
 }
 </script>
 
-<style scoped>
-.search-box {
-    padding: 2px 10px;
-    height: 20px;
-    width: 250px;
-    border: none;
-    outline: none;
-    background: #bbb;
-    border-radius: 10px;
-    font: 12px;
+<style scoped lang="less">
+.logo {
+  margin-right: 100px;
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
 }
+.header-button {
+  display: inline-block;
+  padding: 2px 5px;
+  font-size: 16px;
+  vertical-align: middle;
+  border: 1px solid pink;
+  border-left: .5px solid pink;
+  border-radius: 0 5px 5px 0 ;
+  &:nth-of-type(1) {
+    transform: rotate(180deg);
+  }
+}
+
 </style>

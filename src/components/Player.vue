@@ -238,7 +238,11 @@ export default {
     },
     goSongPage() {
       if(this.playingSong.id){
-        this.$router.push('/song')
+        if(this.$router.history.current.path === "/song") {
+          this.$router.go(-1)
+        }else {
+          this.$router.push('/song')
+        }
       }
     }
   }

@@ -9,8 +9,8 @@
             <li class="playerListSongItem" v-for="(item, index) in playList" :key="item.id" @dblclick="playingSong(index)">
                 <div class="playeringMark iconfont" v-if="item.isPlaying">&#xe60f;</div>
                 <div class="noPlayeringMark iconfont" v-else>&#xe60f;</div>
-                <div class="playerListSongName" :title="item.name">{{sliceContent(item.name,"name")}}</div>
-                <div class="playerListSongaArtists" :title="item.artists" >{{sliceContent(item.artists,"artists")}}</div>
+                <div class="playerListSongName" :title="item.name">{{item.name}}</div>
+                <div class="playerListSongaArtists" :title="item.artists" >{{item.artists}}</div>
                 <div class="playerListSongDelete iconfont" @click="removePlayListItem({type:'index',val: index})">&#xe601;</div>
             </li>
           </transition-group>
@@ -35,19 +35,6 @@ export default {
       })
   },
   methods:{
-      sliceContent(content, type) {
-          if(type === "artists"){
-            if(content.length > 9) {
-              return content.slice(0,9) + "..."
-            }
-            return content
-          }else if(type === "name") {
-            if(content.length > 14) {
-              return content.slice(0,14) + "..."
-            }
-            return content
-          }
-      },
       playingSong(index) {
           this.$store.commit("setPlayingSong",index)
       },
@@ -101,6 +88,7 @@ export default {
 .playerListSong {
     display: table;
     width: 100%;
+    table-layout: fixed;
     box-sizing: border-box;
     > .playerListSongItem {
         display: table-row;
@@ -120,16 +108,22 @@ export default {
         }
         .playerListSongName {
             display: table-cell;
-            width: 60%;
+            width: 150px;
             font-size: 15px;
             line-height: 35px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .playerListSongaArtists {
             display: table-cell;
-            width: 40%;
+            width: 130px;
             font-size: 15px;
             color: #888;
             line-height: 35px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .playeringMark {
             margin: 0 10px 0 10px;
@@ -158,8 +152,7 @@ export default {
         }
     }
 }
-.playList-enter, .playList-leave-to
-/* .list-leave-active for below version 2.1.8 */ {
+.playList-enter, .playList-leave-to {
   opacity: 0;
   transform: translateX(350px) scale(0);
 }

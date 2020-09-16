@@ -33,7 +33,7 @@ export default new Vuex.Store({
   mutations: {
     /**
      * @function 设置当前播放歌曲
-     * @param {Object: {name:String, id:String, artists:String, [imgSrc:String]} } val 关于歌曲的信息
+     * @param {Object: {name:String, id:String, artists:String, [picUrl:String]} } val 关于歌曲的信息
      * @param {Number} val 关于歌曲在playList的索引值
      */
     setPlayingSong(state, val) {
@@ -70,7 +70,7 @@ export default new Vuex.Store({
     },
     /**
      * @function 向播放列表添加歌曲
-     * @param {Object: {name:String, id:String, artists:String, [imgSrc:String, isPlaying: Boolean]} } val 歌曲的相关信息
+     * @param {Object: {name:String, id:String, artists:String, [picUrl:String, isPlaying: Boolean]} } val 歌曲的相关信息
      */
     addPlayListItem(state, val) {
       if(val.name && val.id && val.artists) {

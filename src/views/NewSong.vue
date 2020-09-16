@@ -1,23 +1,23 @@
 <template>
-  <div class="new-song">
-      <div class="title">最新歌曲</div>
-      <ul class="song-list">
-          <li class="song-list-item" v-for="(item,index) in songData" :key="item.id" @click="playSong(index,$event)">
-            <div class="song-img iconfont">
-              <img :src="item.picUrl" alt="">
-            </div>
-            <div class="song-words">
-              <p>{{item.name}}</p>
-              <p>{{item.artists}}</p>
-            </div>
-          </li>
-      </ul>
-  </div>
+    <div class="new-song">
+        <div class="title">最新歌曲</div>
+        <ul class="song-list">
+            <li class="song-list-item" v-for="(item,index) in songData" :key="item.id" @click="playSong(index,$event)">
+              <div class="song-img iconfont">
+                <img :src="item.picUrl" alt="">
+              </div>
+              <div class="song-words">
+                <p>{{item.name}}</p>
+                <p>{{item.artists}}</p>
+              </div>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
 import {getNewSong} from "@/server/netease"
-
+import {getSongArtists} from "@/assets/js/songMethods"
 export default {
   name: "NewSong",
   props: {type: String},
@@ -28,10 +28,6 @@ export default {
     }
   },
   methods: {
-    getSongArtists(artistsArr) {
-      let nameArr = artistsArr.map(item => item.name)
-      return nameArr.join("/")
-    },
     playSong(index) {
       this.$store.commit("setPlayingSong",this.songData[index])
     }
@@ -43,7 +39,7 @@ export default {
           name: item.name,
           picUrl: item.picUrl,
           id: item.id,
-          artists: this.getSongArtists(item.song.artists)
+          artists: getSongArtists(item.song.artists)
         }))
       }).catch(err => {
         console.log(err)
