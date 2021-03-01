@@ -8,7 +8,7 @@
         <button class="iconfont" @click="nextSong">&#xe62b;</button>
       </div>
       <div class="playerData">
-        <img :src="playingSong.picUrl || require('@/assets/logo.png')" alt="" class="playerImg" @click="goSongPage">
+        <img :src="playingSong.picUrl || require('@/assets/img/logo.png')" alt="" class="playerImg" @click="goSongPage">
         <div class="playerDetail">
           <div class="playerWords">
             <div class="songData">
@@ -51,9 +51,9 @@
 </template>
 
 <script>
-import {getSongData} from "@/server/netease.js"
+import {getSongData} from "@/api/netease"
 import { mapGetters } from 'vuex'
-import {secondsToMinutes} from "@/assets/js/timetTansform.js"
+import {secondsToMinutes} from "@/libs/tool"
 import PlayerList from "./PlayerList"
 //播放位置的互斥锁与延时函数的标识
 let playProgressFlag = true

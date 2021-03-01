@@ -27,10 +27,10 @@ export default {
   computed: {
       ...mapState({
           playList:(state) => {
-              if(state.playList.length === 0) {
+              if(state.playSong.playList.length === 0) {
                   return undefined
               }
-              return state.playList
+              return state.playSong.playList
           }
       })
   },

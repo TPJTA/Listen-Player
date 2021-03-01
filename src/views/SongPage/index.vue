@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {scrollAnimation} from "@/assets/js/scrollAnimation.js"
+import {scrollAnimation} from "@/libs/tool"
 import {mapGetters,mapState} from "vuex"
 export default {
   name: "SongPage",
@@ -32,11 +32,11 @@ export default {
   computed:{
     ...mapGetters(['playingSong']),
     ...mapState({
-      musicDom:'musicDom',
+      musicDom: (state) => state.playSong.musicDom,
       lyric: function(state) {
-        if(this.playingSong.id && state.playList[this.playingSong.index].lyric){
-          let timeArr = state.playList[this.playingSong.index].lyric.match(/\[.{8,9}\]/g)
-          let lyric = state.playList[this.playingSong.index].lyric.split(/[ \n]?\[.{8,9}\] ?/g)
+        if(this.playingSong.id && state.playSong.playList[this.playingSong.index].lyric){
+          let timeArr = state.playSong.playList[this.playingSong.index].lyric.match(/\[.{8,9}\]/g)
+          let lyric = state.playSong.playList[this.playingSong.index].lyric.split(/[ \n]?\[.{8,9}\] ?/g)
           lyric.splice(0,1)
           let lyricAndTime = timeArr.map((item,index) => ({
             time:this.timeProcess(item),
@@ -103,7 +103,7 @@ export default {
 }
   .song-page {
     width: 100%;
-    height: 450px;
+    height: 78vh;
     position: relative;
     overflow: hidden;
   }

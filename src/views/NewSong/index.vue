@@ -1,4 +1,6 @@
 <template>
+<keep-alive name="song" mode="out-in" :appear="true" >
+  <transition name="song" mode="out-in" :appear="true">
     <div class="new-song">
         <div class="title">最新歌曲</div>
         <ul class="song-list">
@@ -13,19 +15,22 @@
             </li>
         </ul>
     </div>
+  </transition>
+</keep-alive>
 </template>
 
 <script>
-import {getNewSong} from "@/server/netease"
-import {getSongArtists} from "@/assets/js/songMethods"
+import {mapState} from "vuex"
 export default {
   name: "NewSong",
   props: {type: String},
-
-  data: function() {
-    return {
-        songData:[]
-    }
+  computed: {
+    ...mapState({
+      songData:(state) => {
+        console.log(state);
+        return state.newSong.songData
+      }
+    })
   },
   methods: {
     playSong(index) {
@@ -33,23 +38,22 @@ export default {
     }
   },
   mounted() {
-    if(this.type === "netease") {
-      getNewSong().then(suc => {
-        this.songData = suc.data.result.map(item => ({
-          name: item.name,
-          picUrl: item.picUrl,
-          id: item.id,
-          artists: getSongArtists(item.song.artists)
-        }))
-      }).catch(err => {
-        console.log(err)
-      })
+    if(this.$store.state.newSong.songData.length===0) {
+      this.$store.dispatch("getSong")
     }
   }
 }
 </script>
 
 <style scoped lang="less">
+.song {
+  &-enter-active, &-leave-active {
+    transition: transform .2s;
+  }
+  &-enter, &-leave-to {
+    transform: scale(0);
+  }
+}
 .new-song {
   padding: 0 20px;
 }

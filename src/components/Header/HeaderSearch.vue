@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {keyWords} from "@/server/netease.js"
+import {keyWords} from "@/api/netease"
 let isNone = false //是否输入框为空，为空则请求结束时直接将result设置为[]
 
 export default {
@@ -42,7 +42,7 @@ export default {
                     if(isNone) {
                         this.result = []
                     }else {
-                        this.result = suc.data.result.allMatch
+                        this.result = suc.result.allMatch
                     }
                 }).catch(err => {
                     console.log(err)
@@ -55,7 +55,6 @@ export default {
     },
     methods: {
         searchSong(name) {
-            console.log(name)
             this.$router.push(`/search/${name}`)
             this.keyWord = ""
         },

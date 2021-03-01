@@ -1,44 +1,44 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import store from '@/store'
-Vue.use(VueRouter)
-const originalPush = VueRouter.prototype.push
+import Vue from "vue";
+import VueRouter from "vue-router";
+import store from "@/store";
+Vue.use(VueRouter);
+const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
-   return originalPush.call(this, location).catch(err => err)
-}
-  const routes = [
+  return originalPush.call(this, location).catch((err) => err);
+};
+const routes = [
   {
-    path: '/netease',
-    name: 'Netease',
+    path: "/netease",
+    name: "Netease",
     props() {
-      return {type: "netease"}
+      return { type: "netease" };
     },
-    component: () => import('../views/NewSong')
+    component: () => import("../views/NewSong"),
   },
   {
-    path: '/song',
-    name: 'Song',
-    component: () => import('../views/SongPage'),
-    beforeEnter:(to, from, next) => {
-      if(store.getters.playingSong.id) {
-        next()
-      }else {
-        next(false)
+    path: "/song",
+    name: "Song",
+    component: () => import("../views/SongPage"),
+    beforeEnter: (to, from, next) => {
+      if (store.getters.playingSong.id) {
+        next();
+      } else {
+        next(false);
       }
-    }
+    },
   },
   {
     path: "/search/:name",
     name: "Search",
     component: () => import("../views/SearchResult"),
-    props: true
-  }
-]
+    props: true,
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

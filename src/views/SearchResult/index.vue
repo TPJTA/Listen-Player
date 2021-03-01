@@ -47,9 +47,8 @@
 </template>
 
 <script>
-import {getSearchResult} from "@/server/netease"
-import {getSongArtists} from "@/assets/js/songMethods"
-import {secondsToMinutes} from "@/assets/js/timetTansform.js"
+import {getSearchResult} from "@/api/netease"
+import {getSongArtists, secondsToMinutes} from "@/libs/tool"
 var eventFn
 export default {
     props: {name: String},
@@ -74,14 +73,14 @@ export default {
             })
         },
         playSong(index) {
-            console.log(1)
             this.$store.commit("setPlayingSong",{
                 ...this.result[index],
             })
         },
         getSongResult(name, page) {
             getSearchResult(name, page).then(suc => {
-                let result = suc.data.result.songs.map(item => ({
+                console.log(suc);
+                let result = suc.result.songs.map(item => ({
                     name: item.name,
                     id:item.id,
                     artists: getSongArtists(item.ar),
@@ -153,7 +152,7 @@ export default {
                 display: block;
                 height: 10px;
                 width: 3px;
-                background: #000;
+                background: #666;
                 transform: rotate(45deg*((@i)-1));
                 transform-origin: center -80%;
                 animation: loading .7s ease infinite .1s*((@i)-1);

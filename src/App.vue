@@ -1,15 +1,7 @@
 <template>
   <div id="app">
     <Header />
-    <div id="nav">
-      <router-link to="/netease">网易云音乐</router-link> |
-      <router-link to="/qq">qq音乐</router-link> |
-      <router-link to="/kugou">酷狗音乐</router-link> |
-      <router-link to="/song">酷狗音乐</router-link>
-    </div>
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <router-view></router-view>
     <Player/>
   </div>
 </template>
@@ -21,7 +13,7 @@ export default {
   name: "App",
   components: {
     Header,
-    Player
+    Player,
   }
 }
 </script>
