@@ -1,26 +1,31 @@
 //newSong的缓存
-import { getNewSong } from "@/api/netease";
+import netease from "@/api/netease";
 import { getSongArtists } from "@/libs/tool";
 let newSong = {
   state: {
-    songData: [],
+    netease: [],
+    qq: []
   },
   mutations: {
-    setSongData(state, data) {
-      state.songData = data;
+    setNetease(state, data) {
+      state.netease = data;
     },
+    setQQ(state, data) {
+      state.qq = data;
+    }
   },
   actions: {
-    getSong(state) {
-      getNewSong()
+    getNeteaseSong(state) {
+      netease.getNewSong()
         .then((suc) => {
           let songData = suc.result.map((item) => ({
             name: item.name,
             picUrl: item.picUrl,
             id: item.id,
             artists: getSongArtists(item.song.artists),
+            source: "netease"
           }));
-          state.commit("setSongData", songData);
+          state.commit("setNetease", songData);
         })
         .catch((err) => {
           console.log(err);

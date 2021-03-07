@@ -1,28 +1,25 @@
-import axios from "axios";
-import qs from "qs";
-import neteaseRequest from "./netease/request";
-const instance = axios.create({
-  timeout: 1000,
-});
-instance.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded;charset=UTF-8";
+import axios from 'axios';
+import qs from 'qs';
+import neteaseRequest from './netease/request';
 
-//请求拦截器
+const instance = axios.create();
+instance.defaults.responseType = 'json;text/plain;charset=utf-8;';
+instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+instance.defaults.withCredentials = true;
+// 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    //网易云
+    // 网易云
     if (/^\/netServe/.test(config.url)) {
       config.data = qs.stringify(neteaseRequest(config.data));
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error),
 );
 instance.interceptors.response.use(
   (res) => {
-    if (res.status === 200) {
+    if (res.status >= 200 && res.status < 400) {
       if (res.data) {
         return res.data;
       }
@@ -30,8 +27,6 @@ instance.interceptors.response.use(
     }
     return res;
   },
-  function(error) {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error),
 );
 export default instance;

@@ -16,6 +16,14 @@ const routes = [
     component: () => import("../views/NewSong"),
   },
   {
+    path: "/qq",
+    name: "QQ",
+    props() {
+      return { type: "qq" };
+    },
+    component: () => import("../views/NewSong"),
+  },
+  {
     path: "/song",
     name: "Song",
     component: () => import("../views/SongPage"),

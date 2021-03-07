@@ -1,56 +1,88 @@
 <template>
-<keep-alive name="song" mode="out-in" :appear="true" >
-  <transition name="song" mode="out-in" :appear="true">
-    <div class="new-song">
+  <keep-alive name="song" mode="out-in" :appear="true">
+    <transition name="song" mode="out-in" :appear="true">
+      <div class="new-song">
         <div class="title">最新歌曲</div>
         <ul class="song-list">
-            <li class="song-list-item" v-for="(item,index) in songData" :key="item.id" @click="playSong(index,$event)">
-              <div class="song-img iconfont">
-                <img :src="item.picUrl" alt="">
+          <li
+            class="song-list-item"
+            v-for="(item, index) in songData"
+            :key="item.id"
+            @click="playSong(index, $event)"
+          >
+            <div class="song-img iconfont">
+              <img
+                :src="item.picUrl"
+                alt=""
+                @load="setIsLoading(index, false)"
+              />
+              <div class="song-img-play" v-show="!isShowArr[index]">
+                &#xe60f;
               </div>
-              <div class="song-words">
-                <p>{{item.name}}</p>
-                <p>{{item.artists}}</p>
-              </div>
-            </li>
+              <LoadingImg :isShow="isShowArr[index]" />
+            </div>
+            <div class="song-words">
+              <p>{{ item.name }}</p>
+              <p>{{ item.artists }}</p>
+            </div>
+          </li>
         </ul>
-    </div>
-  </transition>
-</keep-alive>
+      </div>
+    </transition>
+  </keep-alive>
 </template>
 
 <script>
-import {mapState} from "vuex"
+import { mapState } from "vuex";
+import LoadingImg from "@/components/LoadingImg";
 export default {
   name: "NewSong",
-  props: {type: String},
+  props: { type: String },
+  components: {
+    LoadingImg
+  },
+  data() {
+    return {
+      isShowArr: []
+    };
+  },
   computed: {
     ...mapState({
-      songData:(state) => {
-        console.log(state);
-        return state.newSong.songData
+      songData: function(state) {
+        if (this.type === "netease") {
+          this.isShowArr = new Array(state.newSong.netease.length).fill(true);
+          return state.newSong.netease;
+        }
       }
     })
   },
   methods: {
     playSong(index) {
-      this.$store.commit("setPlayingSong",this.songData[index])
+      this.$store.commit("setPlayingSong", this.songData[index]);
+    },
+    setIsLoading(i, bool) {
+      let isShowArr = [...this.isShowArr];
+      isShowArr[i] = bool;
+      this.isShowArr = isShowArr;
     }
   },
   mounted() {
-    if(this.$store.state.newSong.songData.length===0) {
-      this.$store.dispatch("getSong")
-    }
+    if (this.type === "netease")
+      if (this.$store.state.newSong.netease.length === 0) {
+        this.$store.dispatch("getNeteaseSong");
+      }
   }
-}
+};
 </script>
 
 <style scoped lang="less">
 .song {
-  &-enter-active, &-leave-active {
-    transition: transform .2s;
+  &-enter-active,
+  &-leave-active {
+    transition: transform 0.2s;
   }
-  &-enter, &-leave-to {
+  &-enter,
+  &-leave-to {
     transform: scale(0);
   }
 }
@@ -62,7 +94,7 @@ export default {
   font-size: 20px;
   color: #666;
   &::after {
-    margin: 5px  0;
+    margin: 5px 0;
     content: "";
     display: block;
     width: 100%;
@@ -76,6 +108,7 @@ export default {
   min-width: 1000px;
 }
 .song-list-item {
+  position: relative;
   margin-bottom: 30px;
   box-sizing: border-box;
   padding: 0 50px;
@@ -83,26 +116,28 @@ export default {
   min-width: 200px;
   cursor: pointer;
   &:hover {
-    .song-img::before {
+    .song-img-play {
       opacity: 1;
     }
   }
 }
 .song-img {
   position: relative;
-  &::before {
-    content: "\e60f";
+  width: 100%;
+  &-play {
     display: flex;
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, .2);
+    background-color: rgba(0, 0, 0, 0.2);
     opacity: 0;
     font-size: 20px;
     justify-content: center;
     align-items: center;
     color: red;
-    transition: opacity .5s;
+    transition: opacity 0.5s;
   }
 }
 .song-img > img {
@@ -125,4 +160,4 @@ export default {
     color: #999;
   }
 }
-</style>>
+</style>
