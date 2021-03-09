@@ -81,6 +81,7 @@
 
 <script>
 import netease from "@/api/netease";
+import qq from "@/api/qq";
 import { mapGetters } from "vuex";
 import { secondsToMinutes } from "@/libs/tool";
 import PlayerList from "./PlayerList";
@@ -159,12 +160,26 @@ export default {
         this.playingPosition = 0;
         this.isBuffering = true;
         if (this.playingSong.id) {
-          netease.getSongData(this.playingSong.id).then(suc => {
-            this.songData.src = suc.playSong.url;
-            if (!this.playingSong.lyric) {
-              this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
-            }
-          });
+          if (this.playingSong.source === "netease") {
+            netease.getSongData(this.playingSong.id).then(suc => {
+              this.songData.src = suc.playSong.url;
+              if (!this.playingSong.lyric) {
+                this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
+              }
+            });
+          } else if (this.playingSong.source === "qq") {
+            Promise.all([
+              qq.getSongUrl(this.playingSong.id),
+              qq.getlyric(this.playingSong.id)
+            ]).then(res => {
+              let [url, lyric] = res;
+              this.songData.src =
+                url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
+              if (!this.playingSong.lyric) {
+                this.$store.commit("setPlayinglyric", lyric.lyric);
+              }
+            });
+          }
         } else {
           this.isBuffering = false;
         }
@@ -174,12 +189,26 @@ export default {
   mounted() {
     this.$store.commit("setMusicDom", this.$refs.music);
     if (this.playingSong.id) {
-      netease.getSongData(this.playingSong.id).then(suc => {
-        this.songData.src = suc.playSong.url;
-        if (!this.playingSong.lyric) {
-          this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
-        }
-      });
+      if (this.playingSong.source === "netease") {
+        netease.getSongData(this.playingSong.id).then(suc => {
+          this.songData.src = suc.playSong.url;
+          if (!this.playingSong.lyric) {
+            this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
+          }
+        });
+      } else if (this.playingSong.source === "qq") {
+        Promise.all([
+          qq.getSongUrl(this.playingSong.id),
+          qq.getlyric(this.playingSong.id)
+        ]).then(res => {
+          let [url, lyric] = res;
+          this.songData.src =
+            url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
+          if (!this.playingSong.lyric) {
+            this.$store.commit("setPlayinglyric", lyric.lyric);
+          }
+        });
+      }
     } else {
       this.isBuffering = false;
     }
@@ -316,7 +345,8 @@ export default {
   align-items: center;
   button {
     margin: 0 20px;
-    padding: 8px;
+    width: 40px;
+    height: 40px;
     border: 2px #000 solid;
     border-radius: 50%;
     outline: none;
@@ -438,7 +468,7 @@ export default {
     width: 4px;
     height: 4px;
     background: red;
-    transform: translate(75%, -50%);
+    transform: translate(50%, -50%);
     border: none;
   }
 }

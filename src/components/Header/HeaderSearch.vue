@@ -9,7 +9,12 @@
       @focus="setResultShow(true)"
     />
     <i class="iconfont search-icon" @click="searchSong(keyWord)">&#xe602;</i>
-    <transition-group tag="ul" class="search-keywords" name="keywords" v-show="isResultShow">
+    <transition-group
+      tag="ul"
+      class="search-keywords"
+      name="keywords"
+      v-show="isResultShow"
+    >
       <li
         class="search-keywords-item iconfont"
         v-for="item in result"
@@ -23,52 +28,75 @@
 </template>
 
 <script>
-import netease from '@/api/netease';
-
+import netease from "@/api/netease";
+import qq from "@/api/qq";
 let isNone = false; // 是否输入框为空，为空则请求结束时直接将result设置为[]
 
 export default {
-  name: 'HeaderSearch',
+  name: "HeaderSearch",
+  props: { source: String },
   data() {
     return {
-      keyWord: '',
+      keyWord: "",
       result: [],
-      isResultShow: false,
+      isResultShow: false
     };
   },
   watch: {
     keyWord() {
       if (this.keyWord) {
         isNone = false;
-        netease
-          .keyWords(this.keyWord)
-          .then((suc) => {
-            if (isNone) {
-              this.result = [];
-            } else {
-              this.result = suc.result.allMatch;
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        if (this.source === "netease") {
+          netease
+            .keyWords(this.keyWord)
+            .then(suc => {
+              if (isNone) {
+                this.result = [];
+              } else {
+                this.result = suc.result.allMatch;
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else if (this.source === "qq") {
+          qq.keyWords(this.keyWord)
+            .then(res => {
+              if (isNone) {
+                this.result = [];
+              } else {
+                this.result = res.data.song.itemlist.map(item => {
+                  return {
+                    ...item,
+                    keyword: item.name
+                  };
+                });
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
       } else {
         isNone = true;
         this.result = [];
       }
-    },
+    }
   },
   methods: {
     searchSong(name) {
-      this.$router.push(`/search/${name}`);
-      this.keyWord = '';
+      this.$router.push({
+        path: `/search/${this.source}`,
+        query: { name }
+      });
+      this.keyWord = "";
     },
     setResultShow(isShow) {
       setTimeout(() => {
         this.isResultShow = isShow;
       }, 100);
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -76,29 +104,32 @@ export default {
 .search {
   display: inline-block;
   position: relative;
+  height: 100%;
+  flex: 1;
   &-icon {
     display: block;
     position: absolute;
     padding: 2px 0;
-    content: '\e602';
-    top: 0;
-    right: 7px;
+    content: "\e602";
+    top: 50%;
+    left: 300px;
     font-size: 14px;
     cursor: pointer;
     color: #666;
     z-index: 6;
+    transform: translateY(-50%);
   }
   .search-box {
     position: relative;
     margin-left: 30px;
     padding: 2px 50px 2px 10px;
-    height: 20px;
-    width: 250px;
+    height: 100%;
+    width: 300px;
     box-sizing: border-box;
     border: none;
     outline: none;
-    background: #bbb;
-    border-radius: 10px;
+    background: rgb(229, 229, 229);
+    border-radius: 5px;
     font: 12px;
   }
 }
@@ -126,7 +157,7 @@ export default {
     position: absolute;
     left: 5px;
     top: 50%;
-    content: '\e602';
+    content: "\e602";
     transform: translate(0, -50%);
   }
 }

@@ -8,12 +8,16 @@ VueRouter.prototype.push = function push(location) {
 };
 const routes = [
   {
+    path: "/",
+    redirect: "/netease"
+  },
+  {
     path: "/netease",
     name: "Netease",
     props() {
       return { type: "netease" };
     },
-    component: () => import("../views/NewSong"),
+    component: () => import("../views/NewSong/netease"),
   },
   {
     path: "/qq",
@@ -21,7 +25,10 @@ const routes = [
     props() {
       return { type: "qq" };
     },
-    component: () => import("../views/NewSong"),
+    meta: {
+      sourse: "b"
+    },
+    component: () => import("../views/NewSong/qq"),
   },
   {
     path: "/song",
@@ -36,10 +43,15 @@ const routes = [
     },
   },
   {
-    path: "/search/:name",
+    path: "/search/:source",
     name: "Search",
     component: () => import("../views/SearchResult"),
-    props: true,
+    props: (router) => {
+      return {
+        source: router.params.source,
+        name: router.query.name
+      }
+    },
   },
 ];
 

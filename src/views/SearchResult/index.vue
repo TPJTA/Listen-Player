@@ -55,19 +55,22 @@
           </div>
         </div>
       </div>
+      <div class="search-result-last" v-if="isLast">没有更多了~~</div>
     </div>
   </div>
 </template>
 
 <script>
 import netease from "@/api/netease";
+import qq from "@/api/qq";
 import { getSongArtists, secondsToMinutes } from "@/libs/tool";
 
-let eventFn;
 export default {
-  props: { name: String },
+  name: "search",
+  props: { name: String, source: String },
   data() {
     return {
+      isLast: false,
       isLoading: true,
       result: [],
       page: 1
@@ -92,30 +95,55 @@ export default {
       });
     },
     getSongResult(name, page) {
-      netease
-        .getSearchResult(name, page)
-        .then(suc => {
-          console.log(suc.result.songs);
-          const result = suc.result.songs.map(item => ({
-            name: item.name,
-            id: item.id,
-            artists: getSongArtists(item.ar),
-            al: item.al.name,
-            publishTime: secondsToMinutes(item.dt / 1000).join(":"),
-            picUrl: item.al.picUrl,
-            source: "netease"
-          }));
-          this.result = [...this.result, ...result];
-          this.isLoading = false;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
-  },
-  mounted() {
-    this.getSongResult(this.name, this.page);
-    eventFn = () => {
+      if (this.source === "netease") {
+        netease
+          .getSearchResult(name, page)
+          .then(suc => {
+            if (suc.result.songs && suc.result.songs.length < 20) {
+              this.isLast = true;
+            }
+            const result = suc.result.songs.map(item => ({
+              name: item.name,
+              id: item.id,
+              artists: getSongArtists(item.ar),
+              al: item.al.name,
+              publishTime: secondsToMinutes(item.dt / 1000).join(":"),
+              picUrl: item.al.picUrl,
+              source: "netease"
+            }));
+            this.result = [...this.result, ...result];
+            this.isLoading = false;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } else if (this.source === "qq") {
+        qq.getSearchResult(name, page)
+          .then(res => {
+            if (res.data.song.list && res.data.song.list.length < 20) {
+              this.isLast = true;
+            }
+            console.log(res.data.song.list);
+            const result = res.data.song.list.map(item => {
+              return {
+                name: item.songname,
+                id: item.songmid,
+                artists: getSongArtists(item.singer),
+                al: item.albumname,
+                picUrl: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.albummid}.jpg?max_age=2592000`,
+                publishTime: secondsToMinutes(item.pubtime / 1000).join(":"),
+                source: "qq"
+              };
+            });
+            this.result = [...this.result, ...result];
+            this.isLoading = false;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+    },
+    getNextPage() {
       if (
         document.documentElement.scrollHeight -
           document.documentElement.scrollTop <=
@@ -124,12 +152,19 @@ export default {
         this.page += 1;
         this.getSongResult(this.name, this.page);
       }
-    };
-    window.addEventListener("scroll", eventFn);
+    }
+  },
+  mounted() {
+    this.getSongResult(this.name, this.page);
+    window.addEventListener("scroll", this.getNextPage);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.getNextPage);
   },
   watch: {
-    name() {
+    $route() {
       this.result = [];
+      this.page = 1;
       this.isLoading = true;
       this.getSongResult(this.name, this.page);
     }
@@ -193,13 +228,20 @@ export default {
     box-sizing: border-box;
     table-layout: fixed;
   }
+  &-last {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+  }
   &-header {
     display: table-header-group;
     .search-result-cell {
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      &:first-child,
-      &:last-child {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      &:first-child {
         border-left: none;
+      }
+      &:last-child {
+        border-right: none;
       }
     }
   }
@@ -253,11 +295,10 @@ export default {
       width: 10%;
     }
     i {
-      padding: 10px;
       user-select: none;
       cursor: pointer;
       &:nth-child(1) {
-        margin-right: 10px;
+        margin-right: 20px;
       }
     }
   }

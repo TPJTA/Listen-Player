@@ -9,7 +9,9 @@
         <img :src="playingSong.picUrl" alt="" class="song-img" />
         <div class="song-words">
           <div class="song-name">{{ playingSong.name }}</div>
-          <div class="song-artists"><span>歌手:</span>{{ playingSong.artists }}</div>
+          <div class="song-artists">
+            <span>歌手:</span>{{ playingSong.artists }}
+          </div>
           <div class="song-lyric" ref="songIyric">
             <div
               v-for="(item, index) in lyric"
@@ -27,63 +29,70 @@
 </template>
 
 <script>
-import { scrollAnimation } from '@/libs/tool';
-import { mapGetters, mapState } from 'vuex';
+import { scrollAnimation } from "@/libs/tool";
+import { mapGetters, mapState } from "vuex";
 
 export default {
-  name: 'SongPage',
+  name: "SongPage",
   data() {
     return {
-      lyricIndex: 0,
+      lyricIndex: 0
     };
   },
   computed: {
-    ...mapGetters(['playingSong']),
+    ...mapGetters(["playingSong"]),
     ...mapState({
-      musicDom: (state) => state.playSong.musicDom,
+      musicDom: state => state.playSong.musicDom,
       lyric(state) {
-        if (this.playingSong.id && state.playSong.playList[this.playingSong.index].lyric) {
-          const timeArr = state.playSong.playList[this.playingSong.index].lyric.match(
-            /\[.{8,9}\]/g,
-          );
-          const lyric = state.playSong.playList[this.playingSong.index].lyric.split(
-            /[ \n]?\[.{8,9}\] ?/g,
-          );
+        if (
+          this.playingSong.id &&
+          state.playSong.playList[this.playingSong.index].lyric
+        ) {
+          const timeArr = state.playSong.playList[
+            this.playingSong.index
+          ].lyric.match(/\[.{8,9}\]/g);
+          const lyric = state.playSong.playList[
+            this.playingSong.index
+          ].lyric.split(/[ \n]?\[.{8,9}\] ?/g);
           lyric.splice(0, 1);
           const lyricAndTime = timeArr.map((item, index) => ({
             time: this.timeProcess(item),
-            lyric: lyric[index],
+            lyric: lyric[index]
           }));
           return lyricAndTime;
         }
-        return '';
-      },
-    }),
+        return "";
+      }
+    })
   },
   watch: {
     playingSong(val) {
       if (!val.id) {
-        this.$router.replace('/netease');
+        this.$router.replace("/netease");
       }
-    },
+    }
   },
   methods: {
     timeProcess(timeStreing) {
       timeStreing = timeStreing.slice(1, -1);
       const timeArr = timeStreing.split(/[:.]/g);
-      const time = parseInt(timeArr[0]) * 60 + parseInt(timeArr[1]) + parseInt(timeArr[2]) * 0.001;
+      const time =
+        parseInt(timeArr[0]) * 60 +
+        parseInt(timeArr[1]) +
+        parseInt(timeArr[2]) * 0.001;
       return time;
-    },
+    }
   },
   mounted() {
-    this.musicDom.addEventListener('timeupdate', (e) => {
+    this.musicDom.addEventListener("timeupdate", e => {
       if (this.lyric.length > 0) {
         const index = this.lyric.findIndex((item, i) => {
           if (i + 1 >= this.lyric.length) {
             return false;
           }
           return (
-            e.target.currentTime > item.time && e.target.currentTime < this.lyric[i + 1].time
+            e.target.currentTime > item.time &&
+            e.target.currentTime < this.lyric[i + 1].time
           );
         });
         if (index === -1) {
@@ -98,7 +107,7 @@ export default {
         }
       }
     });
-  },
+  }
 };
 </script>
 
@@ -115,7 +124,7 @@ export default {
 }
 .song-page {
   width: 100%;
-  height: 78vh;
+  height: calc(100% - 50px);
   position: relative;
   overflow: hidden;
 }
@@ -125,6 +134,7 @@ export default {
   position: absolute;
   z-index: -1;
   filter: blur(40px) grayscale(50%);
+  background-color: rgb(197, 196, 198);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

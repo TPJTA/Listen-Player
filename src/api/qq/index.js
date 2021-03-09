@@ -96,8 +96,12 @@ const getlyric = songmid =>
     // 将歌词进行解码
     transformResponse(data) {
       data = JSON.parse(data);
-      data.lyric = new Buffer.from(data.lyric, "base64").toString();
-      return data;
+      if(data.lyric) {
+        data.lyric = new Buffer.from(data.lyric, "base64").toString();
+        return data;
+      }else {
+        throw(data)
+      }
     }
   });
 /**

@@ -2,20 +2,33 @@
   <div class="playerList">
     <div class="playerListHeader">
       <div class="playerListTitle">播放列表</div>
-      <div class="playerListCancel iconfont" @click="setPlayerList">&#xe601;</div>
+      <div class="playerListCancel iconfont" @click="setPlayerList">
+        &#xe601;
+      </div>
     </div>
     <div class="playerListSongOutter">
-      <transition-group name="playList" tag="ul" class="playerListSong" v-if="playList">
+      <transition-group
+        name="playList"
+        tag="ul"
+        class="playerListSong"
+        v-if="playList"
+      >
         <li
           class="playerListSongItem"
           v-for="(item, index) in playList"
           :key="item.id"
           @dblclick="playingSong(index)"
         >
-          <div class="playeringMark iconfont" v-if="item.isPlaying">&#xe60f;</div>
+          <div class="playeringMark iconfont" v-if="item.isPlaying">
+            &#xe60f;
+          </div>
           <div class="noPlayeringMark iconfont" v-else>&#xe60f;</div>
-          <div class="playerListSongName" :title="item.name">{{ item.name }}</div>
-          <div class="playerListSongaArtists" :title="item.artists">{{ item.artists }}</div>
+          <div class="playerListSongName" :title="item.name">
+            {{ item.name }}
+          </div>
+          <div class="playerListSongaArtists" :title="item.artists">
+            {{ item.artists }}
+          </div>
           <div
             class="playerListSongDelete iconfont"
             @click="removePlayListItem({ type: 'index', val: index })"
@@ -30,27 +43,27 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations } from "vuex";
 
 export default {
-  name: 'PlayerList',
+  name: "PlayerList",
   props: { setPlayerList: Function },
   computed: {
     ...mapState({
-      playList: (state) => {
+      playList: state => {
         if (state.playSong.playList.length === 0) {
           return undefined;
         }
         return state.playSong.playList;
-      },
-    }),
+      }
+    })
   },
   methods: {
     playingSong(index) {
-      this.$store.commit('setPlayingSong', index);
+      this.$store.commit("setPlayingSong", index);
     },
-    ...mapMutations(['removePlayListItem']),
-  },
+    ...mapMutations(["removePlayListItem"])
+  }
 };
 </script>
 
@@ -67,12 +80,12 @@ export default {
 .playerListHeader {
   position: relative;
   width: 100%;
-  height: 30px;
+  height: 40px;
   background: rgb(244, 244, 246);
   .playerListTitle {
     font-size: 15px;
     text-align: center;
-    line-height: 30px;
+    line-height: 40px;
   }
   .playerListCancel {
     position: absolute;
