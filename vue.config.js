@@ -42,15 +42,6 @@ module.exports = {
         },
         headers: { referer: 'https://y.qq.com/portal/player.html', host: 'u.y.qq.com' },
       },
-      '/yQQ': {
-        target: 'https://y.qq.com',
-        ws: true,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/yQQ': '',
-        },
-        headers: { referer: 'https://y.qq.com/portal/player.html', host: 'u.y.qq.com' },
-      },
     },
   },
 };

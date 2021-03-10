@@ -1,12 +1,10 @@
 import axios from "../http";
 /**
  * 网络启用了代理，请根据设置的请求头请求不同地址
- *   /yQQ: https://y.qq.com
  *   /cQQ: https://c.y.qq.com
  *   /uQQ: https://u.y.qq.com/cgi-bin/musicu.fcg
  *
  */
-const yURL = "/yQQ";
 const cURL = "/cQQ";
 const uURL = "/uQQ";
 const comm = {
@@ -100,7 +98,7 @@ const getlyric = songmid =>
         data.lyric = new Buffer.from(data.lyric, "base64").toString();
         return data;
       }else {
-        throw(data)
+        throw(data);
       }
     }
   });

@@ -124,7 +124,7 @@ export default {
 }
 .song-page {
   width: 100%;
-  height: calc(100% - 50px);
+  height: 100%;
   position: relative;
   overflow: hidden;
 }
@@ -142,6 +142,7 @@ export default {
 }
 .song-data {
   padding: 0 150px;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-around;

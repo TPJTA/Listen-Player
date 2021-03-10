@@ -1,9 +1,11 @@
 <template>
   <div class="layout">
-    <Header :source="source" />
-    <Nav :source="source" />
-    <router-view></router-view>
-    <Player />
+    <div class="main">
+      <Header :source="source" />
+      <Nav :source="source" />
+      <router-view></router-view>
+      <Player />
+    </div>
   </div>
 </template>
 
@@ -38,8 +40,12 @@ export default {
 
 <style>
 .layout {
+  height: 100%;
+  box-sizing: content-box;
+}
+.main {
+  padding-bottom: 100px;
   width: 100%;
   height: 100%;
-  padding-bottom: 100px;
 }
 </style>

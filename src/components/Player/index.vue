@@ -171,14 +171,26 @@ export default {
             Promise.all([
               qq.getSongUrl(this.playingSong.id),
               qq.getlyric(this.playingSong.id)
-            ]).then(res => {
-              let [url, lyric] = res;
-              this.songData.src =
-                url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
-              if (!this.playingSong.lyric) {
-                this.$store.commit("setPlayinglyric", lyric.lyric);
-              }
-            });
+            ])
+              .then(res => {
+                let [url, lyric] = res;
+                this.songData.src =
+                  url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
+                if (!this.playingSong.lyric) {
+                  this.$store.commit("setPlayinglyric", lyric.lyric);
+                }
+              })
+              .catch(() => {
+                this.$store.commit("removePlayListItem", {
+                  type: "index",
+                  val: this.playingSong.index
+                });
+                this.$toast({
+                  text: "该歌曲无法播放",
+                  type: "danger",
+                  duration: 1000
+                });
+              });
           }
         } else {
           this.isBuffering = false;
@@ -200,14 +212,26 @@ export default {
         Promise.all([
           qq.getSongUrl(this.playingSong.id),
           qq.getlyric(this.playingSong.id)
-        ]).then(res => {
-          let [url, lyric] = res;
-          this.songData.src =
-            url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
-          if (!this.playingSong.lyric) {
-            this.$store.commit("setPlayinglyric", lyric.lyric);
-          }
-        });
+        ])
+          .then(res => {
+            let [url, lyric] = res;
+            this.songData.src =
+              url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
+            if (!this.playingSong.lyric) {
+              this.$store.commit("setPlayinglyric", lyric.lyric);
+            }
+          })
+          .catch(() => {
+            this.$store.commit("removePlayListItem", {
+              type: "index",
+              val: this.playingSong.index
+            });
+            this.$toast({
+              text: "该歌曲无法播放",
+              type: "danger",
+              duration: 1000
+            });
+          });
       }
     } else {
       this.isBuffering = false;
