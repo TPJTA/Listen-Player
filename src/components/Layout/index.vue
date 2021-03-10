@@ -1,11 +1,18 @@
 <template>
   <div class="layout">
     <div class="main">
-      <Header :source="source" />
-      <Nav :source="source" />
-      <router-view></router-view>
-      <Player />
+      <Sidebar :isSidebar="isSidebar" />
+      <div class="main-page">
+        <Header
+          :source="source"
+          :changeSidebar="changeSidebar"
+          :isSidebar="isSidebar"
+        />
+        <Nav :source="source" />
+        <router-view></router-view>
+      </div>
     </div>
+    <Player />
   </div>
 </template>
 
@@ -13,17 +20,19 @@
 import Header from "@/components/Header";
 import Player from "@/components/Player";
 import Nav from "@/components/Nav";
-
+import Sidebar from "@/components/Sidebar";
 export default {
   name: "layout",
   components: {
     Header,
     Player,
-    Nav
+    Nav,
+    Sidebar
   },
   data() {
     return {
-      source: "netease"
+      source: "netease",
+      isSidebar: true
     };
   },
   watch: {
@@ -34,18 +43,27 @@ export default {
         this.source = "qq";
       }
     }
+  },
+  methods: {
+    changeSidebar() {
+      this.isSidebar = !this.isSidebar;
+    }
   }
 };
 </script>
 
-<style>
+<style scoped>
 .layout {
   height: 100%;
-  box-sizing: content-box;
+  padding-bottom: 100px;
 }
 .main {
-  padding-bottom: 100px;
   width: 100%;
+  height: 100%;
+  display: flex;
+}
+.main-page {
+  flex: 1;
   height: 100%;
 }
 </style>

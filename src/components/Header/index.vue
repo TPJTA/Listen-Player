@@ -1,6 +1,11 @@
 <template>
   <div class="header">
-    <i class="iconfont header-songSheet-button">&#xe6a1;</i>
+    <i
+      class="iconfont header-songSheet-button"
+      :class="{ 'header-songSheet-button-show': isSidebar }"
+      @click="changeSidebar"
+      >&#xe6a1;</i
+    >
     <img
       class="header-img"
       @click="goMain"
@@ -19,7 +24,7 @@
 import HeaderSearch from "./HeaderSearch";
 export default {
   name: "Header",
-  props: { source: String },
+  props: { source: String, changeSidebar: Function, isSidebar: Boolean },
   components: {
     HeaderSearch
   },
@@ -57,10 +62,14 @@ export default {
   font-size: 22px;
   opacity: 0.7;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transform: rotate(180deg);
+  transition: all 0.3s;
   &:hover {
     opacity: 1;
   }
+}
+.header-songSheet-button-show {
+  transform: rotate(0deg) !important;
 }
 .header-button-outter {
   display: inline-block;

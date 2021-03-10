@@ -100,7 +100,12 @@ export default {
         } else if (this.lyricIndex !== index) {
           this.lyricIndex = index;
           if (index - 4 > 0) {
-            scrollAnimation(35 * (index - 4), this.$refs.songIyric, 0.2);
+            let lyricDOM = this.$refs.songIyric.children[index];
+            scrollAnimation(
+              lyricDOM.offsetTop - 150,
+              this.$refs.songIyric,
+              0.2
+            );
           } else {
             scrollAnimation(0, this.$refs.songIyric, 0.2);
           }
@@ -166,6 +171,7 @@ export default {
     }
   }
   .song-lyric {
+    position: relative;
     width: 450px;
     height: 300px;
     overflow: auto;

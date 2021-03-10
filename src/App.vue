@@ -46,4 +46,7 @@ body {
 .app {
   height: 100%;
 }
+.iconfont {
+  user-select: none;
+}
 </style>
