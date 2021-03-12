@@ -38,7 +38,7 @@ const routes = [
       if (store.getters.playingSong.id) {
         next();
       } else {
-        next(false);
+        next("/");
       }
     },
   },

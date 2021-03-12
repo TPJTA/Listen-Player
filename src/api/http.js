@@ -5,7 +5,7 @@ import neteaseRequest from './netease/request';
 const instance = axios.create();
 instance.defaults.responseType = 'json;text/plain;charset=utf-8;';
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-instance.defaults.withCredentials = true;
+instance.defaults.withCredentials = false;
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {

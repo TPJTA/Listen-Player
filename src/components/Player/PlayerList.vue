@@ -70,7 +70,7 @@ export default {
 <style scoped lang="less">
 .playerList {
   position: absolute;
-  bottom: 52px;
+  bottom: 70px;
   right: 0;
   width: 350px;
   height: 400px;
@@ -105,7 +105,7 @@ export default {
   width: 100%;
   font-size: 18px;
   color: #aaa;
-  line-height: 370px;
+  line-height: 300px;
   text-align: center;
   user-select: none;
 }

@@ -42,6 +42,15 @@ module.exports = {
         },
         headers: { referer: 'https://y.qq.com/portal/player.html', host: 'u.y.qq.com' },
       },
+      "/iQQ": {
+        target: "http://isure.stream.qqmusic.qq.com",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/iQQ': '',
+        },
+        headers: { referer: 'https://y.qq.com/portal/player.html', host: 'u.y.qq.com' },
+      }
     },
   },
 };

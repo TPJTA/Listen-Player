@@ -6,7 +6,15 @@
           class="song-background"
           :style="{ backgroundImage: `url(${playingSong.picUrl})` }"
         ></div>
-        <img :src="playingSong.picUrl" alt="" class="song-img" />
+        <div class="song-picture">
+          <img :src="playingSong.picUrl" alt="" class="song-img" />
+          <div class="song-button">
+            <button><i class="iconfont">&#xe604;</i> 收藏</button>
+            <button @click="download">
+              <i class="iconfont">&#xe64a;</i>下载
+            </button>
+          </div>
+        </div>
         <div class="song-words">
           <div class="song-name">{{ playingSong.name }}</div>
           <div class="song-artists">
@@ -31,7 +39,7 @@
 <script>
 import { scrollAnimation } from "@/libs/tool";
 import { mapGetters, mapState } from "vuex";
-
+import axios from "@/api/http";
 export default {
   name: "SongPage",
   data() {
@@ -62,6 +70,9 @@ export default {
           return lyricAndTime;
         }
         return "";
+      },
+      playUrl(state) {
+        return state.playSong.playList[this.playingSong.index].playUrl;
       }
     })
   },
@@ -81,10 +92,26 @@ export default {
         parseInt(timeArr[1]) +
         parseInt(timeArr[2]) * 0.001;
       return time;
-    }
-  },
-  mounted() {
-    this.musicDom.addEventListener("timeupdate", e => {
+    },
+    download() {
+      axios
+        .get(
+          this.playUrl.replace("http://isure.stream.qqmusic.qq.com", "/iQQ"),
+          {
+            responseType: "blob"
+          }
+        )
+        .then(res => {
+          let suffix = /\.mp3/.test(this.playUrl) ? ".mp3" : ".m4a";
+          let a = document.createElement("a");
+          let url = window.URL.createObjectURL(res);
+          a.href = url;
+          a.download = this.playingSong.name + suffix;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        });
+    },
+    lyricScrollEvent(e) {
       if (this.lyric.length > 0) {
         const index = this.lyric.findIndex((item, i) => {
           if (i + 1 >= this.lyric.length) {
@@ -99,8 +126,8 @@ export default {
           this.lyricIndex = this.lyric.length - 1;
         } else if (this.lyricIndex !== index) {
           this.lyricIndex = index;
-          if (index - 4 > 0) {
-            let lyricDOM = this.$refs.songIyric.children[index];
+          let lyricDOM = this.$refs.songIyric.children[index];
+          if (lyricDOM.offsetTop > 150) {
             scrollAnimation(
               lyricDOM.offsetTop - 150,
               this.$refs.songIyric,
@@ -111,7 +138,13 @@ export default {
           }
         }
       }
-    });
+    }
+  },
+  mounted() {
+    this.musicDom.addEventListener("timeupdate", this.lyricScrollEvent);
+  },
+  beforeDestroy() {
+    this.musicDom.removeEventListener("timeupdate", this.lyricScrollEvent);
   }
 };
 </script>
@@ -129,7 +162,7 @@ export default {
 }
 .song-page {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 50px);
   position: relative;
   overflow: hidden;
 }
@@ -155,6 +188,27 @@ export default {
   .song-img {
     width: 300px;
     height: 300px;
+  }
+  .song-button {
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-around;
+    > button {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: none;
+      opacity: 0.9;
+      &:hover {
+        opacity: 1;
+      }
+      > * {
+        vertical-align: middle;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
   }
   .song-name {
     margin-bottom: 20px;
@@ -184,6 +238,7 @@ export default {
     min-height: 20px;
     font-size: 15px;
     text-align: center;
+    transition: all 0.2s;
   }
 }
 .isplaying {

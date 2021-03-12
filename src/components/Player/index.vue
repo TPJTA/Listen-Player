@@ -159,100 +159,14 @@ export default {
         this.playerBufferedPosition = 0;
         this.playingPosition = 0;
         this.isBuffering = true;
-        if (this.playingSong.id) {
-          if (this.playingSong.source === "netease") {
-            netease.getSongData(this.playingSong.id).then(suc => {
-              this.songData.src = suc.playSong.url;
-              if (!this.playingSong.lyric) {
-                this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
-              }
-            });
-          } else if (this.playingSong.source === "qq") {
-            Promise.all([
-              qq.getSongUrl(this.playingSong.id),
-              qq.getlyric(this.playingSong.id)
-            ])
-              .then(res => {
-                let [url, lyric] = res;
-                this.songData.src =
-                  url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
-                if (!this.playingSong.lyric) {
-                  this.$store.commit("setPlayinglyric", lyric.lyric);
-                }
-              })
-              .catch(() => {
-                this.$store.commit("removePlayListItem", {
-                  type: "index",
-                  val: this.playingSong.index
-                });
-                this.$toast({
-                  text: "该歌曲无法播放",
-                  type: "danger",
-                  duration: 1000
-                });
-              });
-          }
-        } else {
-          this.isBuffering = false;
-        }
+        this.getSongData();
       }
     }
   },
   mounted() {
     this.$store.commit("setMusicDom", this.$refs.music);
-    if (this.playingSong.id) {
-      if (this.playingSong.source === "netease") {
-        netease.getSongData(this.playingSong.id).then(suc => {
-          this.songData.src = suc.playSong.url;
-          if (!this.playingSong.lyric) {
-            this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
-          }
-        });
-      } else if (this.playingSong.source === "qq") {
-        Promise.all([
-          qq.getSongUrl(this.playingSong.id),
-          qq.getlyric(this.playingSong.id)
-        ])
-          .then(res => {
-            let [url, lyric] = res;
-            this.songData.src =
-              url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
-            if (!this.playingSong.lyric) {
-              this.$store.commit("setPlayinglyric", lyric.lyric);
-            }
-          })
-          .catch(() => {
-            this.$store.commit("removePlayListItem", {
-              type: "index",
-              val: this.playingSong.index
-            });
-            this.$toast({
-              text: "该歌曲无法播放",
-              type: "danger",
-              duration: 1000
-            });
-          });
-      }
-    } else {
-      this.isBuffering = false;
-    }
-    this.$refs.music.addEventListener("play", () => {
-      this.isPlay = true;
-    });
-    this.$refs.music.addEventListener("pause", () => {
-      this.isPlay = false;
-    });
-    this.$refs.music.addEventListener("canplay", () => {
-      this.isPlay = true;
-      this.$refs.music.play();
-      this.isBuffering = false;
-      this.songData.duration = this.$refs.music.duration;
-    });
-    this.$refs.music.addEventListener("waiting", () => {
-      this.isBuffering = true;
-    });
-    this.$refs.music.addEventListener("progress", this.getbuff);
-    this.$refs.music.addEventListener("timeupdate", this.getePlayingPosition);
+    this.getSongData();
+    this.addEventToAudio();
   },
   methods: {
     playingMusic() {
@@ -343,6 +257,70 @@ export default {
         } else {
           this.$router.push("/song");
         }
+      }
+    },
+    //为audio绑定相关事件
+    addEventToAudio() {
+      this.$refs.music.addEventListener("play", () => {
+        this.isPlay = true;
+      });
+      this.$refs.music.addEventListener("pause", () => {
+        this.isPlay = false;
+      });
+      this.$refs.music.addEventListener("canplay", () => {
+        this.isPlay = true;
+        this.$refs.music.play();
+        this.isBuffering = false;
+        this.songData.duration = this.$refs.music.duration;
+      });
+      this.$refs.music.addEventListener("waiting", () => {
+        this.isBuffering = true;
+      });
+      this.$refs.music.addEventListener("progress", this.getbuff);
+      this.$refs.music.addEventListener("timeupdate", this.getePlayingPosition);
+    },
+    //获取歌曲的播放地址和歌词
+    getSongData() {
+      if (this.playingSong.id) {
+        if (this.playingSong.source === "netease") {
+          netease.getSongData(this.playingSong.id).then(suc => {
+            this.songData.src = suc.playSong.url;
+            this.$store.commit("setPlayUrl", suc.playSong.url);
+            if (!this.playingSong.lyric) {
+              this.$store.commit("setPlayinglyric", suc.lyric.lrc.lyric);
+            }
+          });
+        } else if (this.playingSong.source === "qq") {
+          Promise.all([
+            qq.getSongUrl(this.playingSong.id),
+            qq.getlyric(this.playingSong.id)
+          ])
+            .then(res => {
+              let [url, lyric] = res;
+              this.$store.commit(
+                "setPlayUrl",
+                url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl
+              );
+              this.songData.src =
+                url.req_0.data.sip[1] + url.req_0.data.midurlinfo[0].purl;
+              if (!this.playingSong.lyric) {
+                this.$store.commit("setPlayinglyric", lyric.lyric);
+              }
+            })
+            .catch(() => {
+              this.$store.commit("removePlayListItem", {
+                type: "index",
+                val: this.playingSong.index
+              });
+              this.$toast({
+                text: "该歌曲无法播放",
+                type: "danger",
+                duration: 1000
+              });
+            });
+        }
+      } else {
+        this.isBuffering = false;
       }
     }
   }

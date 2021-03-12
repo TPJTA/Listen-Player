@@ -15,14 +15,16 @@ const playSong = {
           picUrl: '',
           imgSrc: '',
           lyric: '',
+          playUrl: '',
           isPlaying: false,
           source: ""
         };
+      }else {
+        return {
+          ...state.playList[index],
+          index,
+        };
       }
-      return {
-        index,
-        ...state.playList[index],
-      };
     },
   },
 
@@ -62,6 +64,15 @@ const playSong = {
     setPlayinglyric(state, lyric) {
       if (lyric && this.getters.playingSong) {
         state.playList[this.getters.playingSong.index].lyric = lyric;
+      }
+    },
+    /**
+     * @function 设置当前播放歌曲的播放url
+     * @param {String} url 播放地址
+     */
+    setPlayUrl(state, url) {
+      if(url && this.getters.playingSong) {
+        state.playList[this.getters.playingSong.index].playUrl = url;
       }
     },
     /**
