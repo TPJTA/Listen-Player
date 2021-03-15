@@ -3,29 +3,30 @@
 const playSong = {
   state: {
     playList: [],
-    musicDom: {},
+    musicDom: {}
   },
   getters: {
     playingSong(state) {
-      const index = state.playList.findIndex((item) => item.isPlaying);
+      const index = state.playList.findIndex(item => item.isPlaying);
       if (index === -1) {
         return {
-          name: '',
-          id: '',
-          picUrl: '',
-          imgSrc: '',
-          lyric: '',
-          playUrl: '',
+          name: "",
+          id: "",
+          artists: "",
+          picUrl: "",
+          imgSrc: "",
+          lyric: "",
+          playUrl: "",
           isPlaying: false,
           source: ""
         };
-      }else {
+      } else {
         return {
           ...state.playList[index],
-          index,
+          index
         };
       }
-    },
+    }
   },
 
   mutations: {
@@ -45,7 +46,7 @@ const playSong = {
           state.playList[this.getters.playingSong.index].isPlaying = false;
         }
         const findSongIndex = state.playList.findIndex(
-          (item) => item.id === val.id,
+          item => item.id === val.id
         );
         if (findSongIndex !== -1) {
           if (this.getters.playingSong.id) {
@@ -53,7 +54,7 @@ const playSong = {
           }
           state.playList[findSongIndex].isPlaying = true;
         } else {
-          this.commit('addPlayListItem', { ...val, isPlaying: true });
+          this.commit("addPlayListItem", { ...val, isPlaying: true });
         }
       }
     },
@@ -71,7 +72,7 @@ const playSong = {
      * @param {String} url 播放地址
      */
     setPlayUrl(state, url) {
-      if(url && this.getters.playingSong) {
+      if (url && this.getters.playingSong) {
         state.playList[this.getters.playingSong.index].playUrl = url;
       }
     },
@@ -83,7 +84,7 @@ const playSong = {
      */
     addPlayListItem(state, val) {
       if (val.name && val.id && val.artists && val.source) {
-        if (!state.playList.find((item) => item.id === val.id)) {
+        if (!state.playList.find(item => item.id === val.id)) {
           if (val.isPlaying) {
             if (this.getters.playingSong.id) {
               state.playList[this.getters.playingSong.index].isPlaying = false;
@@ -101,11 +102,11 @@ const playSong = {
      * @param {Object: {type:"index" || "id", val:Number}} data 歌曲相关信息,可选歌曲在playList的索引值或歌曲id
      */
     removePlayListItem(state, data) {
-      if (data.type === 'index') {
+      if (data.type === "index") {
         state.playList.splice(data.val, 1);
-      } else if (data.type === 'id') {
+      } else if (data.type === "id") {
         data.val = String(data.val);
-        const findIndex = state.playList.find((item) => item.id === data.val);
+        const findIndex = state.playList.find(item => item.id === data.val);
         if (findIndex !== -1) {
           state.playList.splice(findIndex, 1);
         }
@@ -152,7 +153,7 @@ const playSong = {
       if (dom) {
         state.musicDom = dom;
       }
-    },
-  },
+    }
+  }
 };
 export default playSong;

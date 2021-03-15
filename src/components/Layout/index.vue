@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import Header from "@/components/Header";
-import Player from "@/components/Player";
-import Nav from "@/components/Nav";
-import Sidebar from "@/components/Sidebar";
+import Header from "./Header";
+import Player from "./Player";
+import Nav from "./Nav";
+import Sidebar from "./Sidebar";
 export default {
   name: "layout",
   components: {

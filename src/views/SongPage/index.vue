@@ -9,9 +9,14 @@
         <div class="song-picture">
           <img :src="playingSong.picUrl" alt="" class="song-img" />
           <div class="song-button">
-            <button><i class="iconfont">&#xe604;</i> 收藏</button>
-            <button @click="download">
-              <i class="iconfont">&#xe64a;</i>下载
+            <button @click.stop="collectSong">
+              <i class="iconfont">{{
+                bookmark.isCollected ? "&#xe61c;" : "&#xe604;"
+              }}</i>
+              收藏
+            </button>
+            <button @click.stop="download">
+              <i class="iconfont">&#xe64a;</i> 下载
             </button>
           </div>
         </div>
@@ -32,6 +37,17 @@
         </div>
       </div>
       <div class="no-song" v-else>你还没有播放歌曲哦!</div>
+      <CollectPage v-model="isShowCollect" title="收藏到歌单">
+        <div
+          class="song-list-item"
+          v-for="item in bookmark.bookmarkList"
+          :key="item.name"
+          @click="collectSongItem(item.name)"
+        >
+          <div class="song-list-item-name">{{ item.name }}</div>
+          <div class="song-list-item-num">{{ item.num }}首音乐</div>
+        </div>
+      </CollectPage>
     </div>
   </transition>
 </template>
@@ -39,13 +55,18 @@
 <script>
 import { scrollAnimation } from "@/libs/tool";
 import { mapGetters, mapState } from "vuex";
+import CollectPage from "@/components/Modal";
 import axios from "@/api/http";
 export default {
   name: "SongPage",
   data() {
     return {
-      lyricIndex: 0
+      lyricIndex: 0,
+      isShowCollect: false
     };
+  },
+  components: {
+    CollectPage
   },
   computed: {
     ...mapGetters(["playingSong"]),
@@ -73,6 +94,25 @@ export default {
       },
       playUrl(state) {
         return state.playSong.playList[this.playingSong.index].playUrl;
+      },
+      bookmark(state) {
+        let isCollected = false;
+        let bookmarkList = [];
+        for (let i in state.bookmark.bookmarkList) {
+          for (let j = 0; j < state.bookmark.bookmarkList[i].length; j++) {
+            if (state.bookmark.bookmarkList[i][j].id === this.playingSong.id) {
+              isCollected = true;
+            }
+            if (isCollected) {
+              break;
+            }
+          }
+          bookmarkList.push({
+            name: i,
+            num: state.bookmark.bookmarkList[i].length
+          });
+        }
+        return { isCollected, bookmarkList };
       }
     })
   },
@@ -138,6 +178,22 @@ export default {
           }
         }
       }
+    },
+    collectSong() {
+      if (this.bookmark.isCollected) {
+        this.$store.commit("removeSong", { songId: this.playingSong.id });
+      } else {
+        this.isShowCollect = true;
+      }
+    },
+    collectSongItem(name) {
+      let playingSong = { ...this.playingSong };
+      delete playingSong.index;
+      this.$store.commit("addSong", {
+        song: playingSong,
+        bookmark: name
+      });
+      this.isShowCollect = false;
     }
   },
   mounted() {
@@ -190,7 +246,7 @@ export default {
     height: 300px;
   }
   .song-button {
-    margin-top: 5px;
+    margin-top: 10px;
     display: flex;
     justify-content: space-around;
     > button {
@@ -199,6 +255,7 @@ export default {
       border-radius: 5px;
       border: none;
       opacity: 0.9;
+      cursor: pointer;
       &:hover {
         opacity: 1;
       }
@@ -248,5 +305,22 @@ export default {
   font-size: 28px;
   text-align: center;
   line-height: 450px;
+}
+.song-list-item {
+  padding: 5px 16px;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  transition: background 0.2s;
+  cursor: pointer;
+  &:hover {
+    background: #ebeced;
+  }
+  &-name,
+  &-num {
+    font-size: 14px;
+  }
+  &-name {
+    font-weight: bold;
+  }
 }
 </style>

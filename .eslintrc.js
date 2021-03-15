@@ -8,6 +8,7 @@ module.exports = {
     'plugin:flowtype/recommended',
   ],
   parserOptions: {
+    parser: "babel-eslint",
     ecmaVersion: 12,
     sourceType: 'module',
   },
