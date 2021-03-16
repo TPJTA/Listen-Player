@@ -5,47 +5,52 @@
         我的歌单
         <i class="iconfont sidebar-add" @click.stop="showAdd">&#xe656;</i>
       </div>
-      <ul class="sidebar-list">
-        <transition-group>
-          <li
-            class="sidebar-list-item sidebar-list-item-add"
-            key="song-add"
-            v-if="isAdd"
-            @click.stop
-          >
-            <input
-              class="sidebar-list-item-add-input"
-              type="text"
-              v-model="addName"
-            />
-            <button class="sidebar-list-item-add-button" @click="addBookmark">
-              确定
-            </button>
-          </li>
-          <li
-            class="sidebar-list-item"
-            @click="showSongList"
-            v-for="item in bookmark"
-            :key="item.name"
-          >
-            <div>
-              <i class="iconfont">&#xe600;</i>
-              <div class="iconfont song-play">&#xe60f;</div>
-              <span>{{ item.name }}</span>
+      <transition-group tag="ul" class="sidebar-list" name="bookmark">
+        <li
+          class="sidebar-list-item sidebar-list-item-add"
+          key="song-add"
+          v-if="isAdd"
+          @click.stop
+        >
+          <input
+            class="sidebar-list-item-add-input"
+            type="text"
+            v-model="addName"
+          />
+          <button class="sidebar-list-item-add-button" @click="addBookmark">
+            确定
+          </button>
+        </li>
+        <li
+          class="sidebar-list-item"
+          @click="showSongList"
+          v-for="(item, index) in bookmark"
+          :key="item.name"
+        >
+          <div>
+            <i class="iconfont">&#xe600;</i>
+            <div class="iconfont song-play" @click.stop="playList(index)">
+              &#xe60f;
             </div>
-            <ul class="sidebar-song-list">
-              <li
-                class="sidebar-song-item"
-                v-for="songItem in item.value"
-                :key="songItem.id"
+            <span>{{ item.name }}</span>
+          </div>
+          <ul class="sidebar-song-list">
+            <li
+              class="sidebar-song-item"
+              v-for="(songItem, songIndex) in item.value"
+              :key="songItem.id"
+            >
+              <div
+                class="iconfont song-play"
+                @click="playSong(index, songIndex)"
               >
-                <div class="iconfont song-play">&#xe60f;</div>
-                <span>{{ songItem.name }}</span>
-              </li>
-            </ul>
-          </li>
-        </transition-group>
-      </ul>
+                &#xe60f;
+              </div>
+              <span>{{ songItem.name }}</span>
+            </li>
+          </ul>
+        </li>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -83,6 +88,15 @@ export default {
     },
     hiddenAdd() {
       this.isAdd = false;
+    },
+    playList(index) {
+      this.$store.commit("changePlayList", this.bookmark[index].value);
+    },
+    playSong(index, songIndex) {
+      this.$store.commit(
+        "setPlayingSong",
+        this.bookmark[index].value[songIndex]
+      );
     }
   },
   computed: {
@@ -114,13 +128,24 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.bookmark-leave-active {
+  height: 0 !important;
+  padding: 0 !important;
+}
+.bookmark-enter,
+.bookmark-leave-to {
+  opacity: 0;
+  transform: translateX(-200px);
+}
 .no-sidebar {
   width: 0px !important;
 }
 .sidebar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 200px;
-  height: 100%;
+  height: calc(100% - 100px);
   background: rgb(248, 248, 248);
   border-right: 1px solid rgb(229, 229, 229);
   overflow: hidden;
@@ -156,6 +181,7 @@ export default {
   font-size: 14px;
   overflow: auto;
   &-item {
+    transition: all 0.5s;
     &-add {
       position: relative;
       height: 32px;

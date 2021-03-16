@@ -1,5 +1,20 @@
 // 当前正在播放的音乐及其歌曲列表
-
+/**
+ * interface Song {
+ *  name: string;
+ *  id: string | number;
+ *  artists: string;
+ *  source: string;
+ *  picUrl?: string;
+ * }
+ * interface PlayListItem extends Song {
+ *  playUrl?: string;
+ *  lyric?: string;
+ *  isPlaying: bool;
+ * }
+ *
+ * playList: PlayListItem[]
+ */
 const playSong = {
   state: {
     playList: [],
@@ -32,7 +47,7 @@ const playSong = {
   mutations: {
     /**
      * @function 设置当前播放歌曲
-     * @param {Object: {name:String, id:String, artists:String, source: string, picUrl?:String} } val 关于歌曲的信息
+     * @param {Song | index} val 关于歌曲的信息或者在playList的索引
      * @param {Number} val 关于歌曲在playList的索引值
      */
     setPlayingSong(state, val) {
@@ -78,9 +93,7 @@ const playSong = {
     },
     /**
      * @function 向播放列表添加歌曲
-     * @param {Object:
-     *  {name:String, id:String, artists:String, source: string, picUrl?:String, isPlaying?: Boolean}
-     * } val 歌曲的相关信息
+     * @param { {isPlaying?: Boolean} extends Song }  val 歌曲的相关信息
      */
     addPlayListItem(state, val) {
       if (val.name && val.id && val.artists && val.source) {
@@ -99,7 +112,7 @@ const playSong = {
     },
     /**
      * @function 移除PlayList的歌曲
-     * @param {Object: {type:"index" || "id", val:Number}} data 歌曲相关信息,可选歌曲在playList的索引值或歌曲id
+     * @param { {type:"index" || "id", val:Number} } data 歌曲相关信息,可选歌曲在playList的索引值或歌曲id
      */
     removePlayListItem(state, data) {
       if (data.type === "index") {
@@ -110,6 +123,17 @@ const playSong = {
         if (findIndex !== -1) {
           state.playList.splice(findIndex, 1);
         }
+      }
+    },
+    /**
+     * @function 改变播放列表
+     * @param {Array<song>} data 要改变的播放列表
+     */
+    changePlayList(state, data) {
+      if (Array.isArray(data)) {
+        let songList = [...data];
+        songList[0].isPlaying = true;
+        state.playList = songList;
       }
     },
     /**

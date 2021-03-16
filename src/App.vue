@@ -49,4 +49,8 @@ body {
 .iconfont {
   user-select: none;
 }
+a {
+  color: #aaa;
+  text-decoration: none;
+}
 </style>

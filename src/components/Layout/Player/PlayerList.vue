@@ -7,37 +7,40 @@
       </div>
     </div>
     <div class="playerListSongOutter">
-      <transition-group
-        name="playList"
-        tag="ul"
-        class="playerListSong"
-        v-if="playList"
-      >
+      <div class="noneSong" v-if="!playList">你还没有添加任何歌曲!</div>
+      <transition-group name="playList" tag="ul" class="playerListSong">
         <li
           class="playerListSongItem"
           v-for="(item, index) in playList"
           :key="item.id"
           @dblclick="playingSong(index)"
         >
-          <div class="playeringMark iconfont" v-if="item.isPlaying">
-            &#xe60f;
-          </div>
-          <div class="noPlayeringMark iconfont" v-else>&#xe60f;</div>
-          <div class="playerListSongName" :title="item.name">
-            {{ item.name }}
-          </div>
-          <div class="playerListSongaArtists" :title="item.artists">
-            {{ item.artists }}
-          </div>
-          <div
-            class="playerListSongDelete iconfont"
-            @click="removePlayListItem({ type: 'index', val: index })"
-          >
-            &#xe601;
+          <div class="playerListSongItemContent">
+            <div class="playeringMark iconfont" v-if="item.isPlaying">
+              &#xe60f;
+            </div>
+            <div
+              class="noPlayeringMark iconfont"
+              @click="playingSong(index)"
+              v-else
+            >
+              &#xe60f;
+            </div>
+            <div class="playerListSongName" :title="item.name">
+              {{ item.name }}
+            </div>
+            <div class="playerListSongaArtists" :title="item.artists">
+              {{ item.artists }}
+            </div>
+            <div
+              class="playerListSongDelete iconfont"
+              @click="removePlayListItem({ type: 'index', val: index })"
+            >
+              &#xe601;
+            </div>
           </div>
         </li>
       </transition-group>
-      <div class="noneSong" v-else>你还没有添加任何歌曲!</div>
     </div>
   </div>
 </template>
@@ -98,10 +101,15 @@ export default {
   }
 }
 .playerListSongOutter {
-  height: 370px;
-  overflow: auto;
+  position: relative;
+  height: 360px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .noneSong {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   font-size: 18px;
   color: #aaa;
@@ -110,17 +118,18 @@ export default {
   user-select: none;
 }
 .playerListSong {
-  display: table;
   width: 100%;
-  table-layout: fixed;
-  box-sizing: border-box;
   > .playerListSongItem {
-    display: table-row;
-    position: relative;
     height: 35px;
     width: 100%;
     user-select: none;
-    transition: all 0.5s linear;
+    transition: all 0.3s linear;
+    .playerListSongItemContent {
+      position: relative;
+      padding: 0 15px 0 30px;
+      height: 100%;
+      width: 100%;
+    }
     &:nth-of-type(even) {
       background: rgb(245, 245, 245);
     }
@@ -132,7 +141,7 @@ export default {
       }
     }
     .playerListSongName {
-      display: table-cell;
+      display: inline-block;
       width: 150px;
       font-size: 15px;
       line-height: 35px;
@@ -141,7 +150,7 @@ export default {
       text-overflow: ellipsis;
     }
     .playerListSongaArtists {
-      display: table-cell;
+      display: inline-block;
       width: 130px;
       font-size: 15px;
       color: #888;
@@ -151,14 +160,20 @@ export default {
       text-overflow: ellipsis;
     }
     .playeringMark {
-      margin: 0 10px 0 10px;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: 12px;
       color: red;
       vertical-align: middle;
       line-height: 35px;
     }
     .noPlayeringMark {
-      margin: 0 10px 0 10px;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: 12px;
       color: #aaa;
       opacity: 0;
@@ -167,8 +182,11 @@ export default {
       line-height: 35px;
     }
     .playerListSongDelete {
+      position: absolute;
       opacity: 0;
-      margin: 0 30px 0 0;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: 10px;
       color: #aaa;
       transition: opacity 0.3s;
@@ -183,11 +201,6 @@ export default {
   transform: translateX(350px) scale(0);
 }
 .playList-leave-active {
-  position: absolute !important;
-  .noPlayeringMark,
-  .playerListSongDelete,
-  .playeringMark {
-    display: none;
-  }
+  position: absolute;
 }
 </style>

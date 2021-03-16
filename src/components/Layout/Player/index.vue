@@ -493,7 +493,7 @@ export default {
   .span-for(@n, @i:1) when(@i <= @n) {
     span:nth-of-type(@{i}) {
       transform-origin: center 140%;
-      transform: translate(180%, 0) rotate(((@i)-1) * 45deg);
+      transform: translate(150%, -40%) rotate(((@i)-1) * 45deg);
       animation-delay: ((@i)-1) * 0.13s;
     }
     .span-for(@n, (@i+1));

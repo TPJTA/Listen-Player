@@ -1,5 +1,5 @@
 <template>
-  <transition name="song" mode="out-in" :appear="true">
+  <transition name="song" :appear="true" @before-leave="setLeavePadding">
     <div class="song-page">
       <div class="song-data" v-if="playingSong.id">
         <div
@@ -189,11 +189,19 @@ export default {
     collectSongItem(name) {
       let playingSong = { ...this.playingSong };
       delete playingSong.index;
+      playingSong.isPlaying = false;
       this.$store.commit("addSong", {
         song: playingSong,
         bookmark: name
       });
       this.isShowCollect = false;
+    },
+    setLeavePadding(dom) {
+      if (document.querySelector(".sidebar").clientWidth !== 0) {
+        // dom.style.left = "200px";
+        // dom.style.paddingLeft = "200px";
+        dom.classList.add("song-left");
+      }
     }
   },
   mounted() {
@@ -206,15 +214,23 @@ export default {
 </script>
 
 <style scoped lang="less">
+.song-left {
+  left: 200px !important;
+  width: calc(100% - 200px) !important;
+}
 .song-enter-active,
 .song-leave-active {
-  transition: all 0.4s;
-  position: absolute;
+  transition: transform 0.5s, opacity 0.5s;
+}
+.song-leave-active {
+  position: absolute !important;
+  top: 40px;
+  right: 0;
 }
 .song-enter,
-.song-leave-active {
+.song-leave-to {
   opacity: 0;
-  transform: translate(-20%, 50%) scale(0);
+  transform: translate(-30%, 50%) scale(0);
 }
 .song-page {
   width: 100%;

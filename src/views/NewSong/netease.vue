@@ -1,29 +1,29 @@
 <template>
-  <transition name="song" mode="out-in" :appear="true">
-    <div class="new-song">
-      <div class="title">最新歌曲</div>
-      <ul class="song-list">
-        <li
-          class="song-list-item"
-          v-for="(item, index) in songData"
-          :key="item.id"
-          @click="playSong(index, $event)"
-        >
-          <div class="song-img iconfont">
-            <img :src="item.picUrl" alt="" @load="setIsLoading(index, false)" />
-            <div class="song-img-play" v-show="!isShowArr[index]">
-              &#xe60f;
-            </div>
-            <LoadingImg :isShow="isShowArr[index]" />
+  <!-- <transition name="song" mode="out-in" :appear="true"> -->
+  <div class="new-song">
+    <div class="title">最新歌曲</div>
+    <ul class="song-list">
+      <li
+        class="song-list-item"
+        v-for="(item, index) in songData"
+        :key="item.id"
+        @click="playSong(index, $event)"
+      >
+        <div class="song-img iconfont">
+          <img :src="item.picUrl" alt="" @load="setIsLoading(index, false)" />
+          <div class="song-img-play" v-show="!isShowArr[index]">
+            &#xe60f;
           </div>
-          <div class="song-words">
-            <p>{{ item.name }}</p>
-            <p>{{ item.artists }}</p>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </transition>
+          <LoadingImg :isShow="isShowArr[index]" />
+        </div>
+        <div class="song-words">
+          <p>{{ item.name }}</p>
+          <p>{{ item.artists }}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <!-- </transition> -->
 </template>
 
 <script>

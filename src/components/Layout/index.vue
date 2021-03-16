@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <div class="main">
+    <div class="main" :style="!isSidebar && 'paddingLeft: 0'">
       <Sidebar :isSidebar="isSidebar" />
       <div class="main-page">
         <Header
@@ -58,9 +58,11 @@ export default {
   padding-bottom: 100px;
 }
 .main {
+  padding-left: 200px;
   width: 100%;
   height: 100%;
   display: flex;
+  transition: padding 0.5s;
 }
 .main-page {
   flex: 1;
