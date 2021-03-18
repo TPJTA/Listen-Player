@@ -134,6 +134,7 @@ export default {
       return time;
     },
     download() {
+      this.$toast({ text: "正在创建下载,请稍后", type: "info" });
       axios
         .get(
           this.playUrl.replace("http://isure.stream.qqmusic.qq.com", "/iQQ"),

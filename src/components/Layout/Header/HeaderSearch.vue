@@ -136,7 +136,7 @@ export default {
 .search-keywords {
   position: absolute;
   left: 35px;
-  width: 240px;
+  width: 290px;
   max-height: 130px;
   background: #fff;
   box-shadow: 0 0 5px 0 #666;
