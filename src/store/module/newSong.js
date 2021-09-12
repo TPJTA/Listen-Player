@@ -34,14 +34,21 @@ let newSong = {
     },
     getQQSong(state) {
       qq.getHotSong().then(res => {
-        let songData = res.hotkey.data.track_info.map((item,index) => ({
-          name: item.name,
-          picUrl: res.hotkey.data.vec_hotkey[index].cover_pic_url,
-          id: item.file.media_mid,
+        let songData = res.req_1.data.songlist.map(item => ({
+          name: item.title,
+          picUrl: `//y.qq.com/music/photo_new/T002R300x300M000${item.album.mid}_1.jpg?max_age=2592000`,
+          id: item.mid,
           artists: getSongArtists(item.singer),
           source: "qq"
-        }));
-        state.commit("setQQ", songData);
+        }))
+        // let songData = res.hotkey.data.track_info.map((item,index) => ({
+        //   name: item.name,
+        //   picUrl: res.hotkey.data.vec_hotkey[index].cover_pic_url,
+        //   id: item.file.media_mid,
+        //   artists: getSongArtists(item.singer),
+        //   source: "qq"
+        // }));
+        state.commit("setQQ",songData);
       }).catch(err => {
         console.log(err);
       })
